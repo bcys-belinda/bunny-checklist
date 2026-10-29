@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐰 Bunny Care Checklist</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --pink:#f8d7e0; --rose:#e8a5b8; --deep:#c97b92; --cream:#fff8f0; --sage:#b8c9a8; --orange:#f2a65a; --brown:#7a5548; }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; min-height:100vh; font-family:'Quicksand',sans-serif; color:var(--brown);
+    background: radial-gradient(circle at 20% 10%, #fff0f4 0, transparent 40%),
+                repeating-linear-gradient(45deg, #fbe4ea 0 14px, #fdeef2 14px 28px);
+    overflow-x:hidden;
+  }
+  .petal { position:fixed; top:-30px; pointer-events:none; font-size:18px; animation:fall linear forwards; z-index:0; }
+  @keyframes fall { to { transform:translateY(110vh) rotate(540deg) translateX(80px); opacity:.3; } }
+
+  .wrap { max-width:720px; margin:30px auto; padding:0 16px; position:relative; z-index:1; }
+  .card {
+    background:var(--cream); border-radius:28px; padding:28px 28px 32px;
+    box-shadow:0 10px 30px rgba(201,123,146,.25); border:3px dashed var(--rose); position:relative;
+  }
+  .card::before, .card::after { content:'🌸'; position:absolute; font-size:30px; }
+  .card::before { top:-16px; left:-12px; } .card::after { content:'🌷'; bottom:-16px; right:-12px; }
+  h1 { font-family:'Caveat',cursive; font-size:3rem; text-align:center; margin:0; color:var(--deep); }
+  .sub { text-align:center; margin:4px 0 10px; font-size:.95rem; }
+  .name { font-family:'Caveat',cursive; font-size:1.6rem; border:none; border-bottom:2px dotted var(--rose);
+    background:transparent; color:var(--deep); text-align:center; width:180px; outline:none; }
+
+  .stage { position:relative; height:200px; display:flex; justify-content:center; align-items:flex-end; }
+  .grass { position:absolute; bottom:0; left:0; right:0; height:24px; border-radius:12px;
+    background:linear-gradient(var(--sage), #9fb48d); }
+  #bunny { width:170px; cursor:pointer; position:relative; z-index:2; transition:transform .3s; transform-origin:bottom center; }
+  #bunny.hop { animation:hop .7s ease; }
+  @keyframes hop { 0%{transform:translateY(0) scale(1.05,.95)} 35%{transform:translateY(-70px) rotate(-6deg)}
+    60%{transform:translateY(-70px) rotate(6deg)} 85%{transform:translateY(0) scale(1.08,.92)} 100%{transform:none} }
+  #bunny.binky { animation:binky .9s ease; }
+  @keyframes binky { 0%{transform:none} 30%{transform:translateY(-90px) rotate(-25deg) scaleX(-1)}
+    60%{transform:translateY(-60px) rotate(20deg)} 100%{transform:none} }
+  .ear { transform-box:fill-box; transform-origin:bottom center; animation:twitch 4s infinite; }
+  .ear.r { animation-delay:1.3s; }
+  @keyframes twitch { 0%,90%,100%{transform:rotate(0)} 93%{transform:rotate(-10deg)} 96%{transform:rotate(6deg)} }
+  .nose { transform-box:fill-box; transform-origin:center; animation:sniff .6s infinite alternate; }
+  @keyframes sniff { to { transform:scale(1.25,.85); } }
+  .lid { transform-box:fill-box; transform-origin:top; transform:scaleY(0); animation:blink 5s infinite; }
+  @keyframes blink { 0%,94%,100%{transform:scaleY(0)} 97%{transform:scaleY(1)} }
+  .bubble { position:absolute; top:6px; left:50%; transform:translateX(30px); background:#fff; padding:8px 14px;
+    border-radius:18px; border:2px solid var(--rose); font-family:'Caveat',cursive; font-size:1.35rem;
+    opacity:0; transition:opacity .3s; white-space:nowrap; z-index:3; }
+  .bubble.show { opacity:1; }
+
+  .progress { margin:18px 0 6px; height:22px; background:var(--pink); border-radius:20px; overflow:hidden; position:relative; }
+  .bar { height:100%; width:0; background:repeating-linear-gradient(45deg,var(--rose) 0 10px,var(--deep) 10px 20px);
+    border-radius:20px; transition:width .5s cubic-bezier(.5,1.6,.5,1); }
+  .ptext { text-align:center; font-weight:600; font-size:.9rem; }
+
+  .tabs { display:flex; gap:8px; justify-content:center; margin:18px 0 10px; flex-wrap:wrap; }
+  .tab { border:2px solid var(--rose); background:#fff; color:var(--deep); padding:6px 16px; border-radius:20px;
+    cursor:pointer; font:600 .95rem 'Quicksand'; transition:.2s; }
+  .tab.active, .tab:hover { background:var(--rose); color:#fff; transform:translateY(-2px); }
+
+  ul { list-style:none; padding:0; margin:0; }
+  li { display:flex; align-items:center; gap:12px; padding:11px 14px; margin:8px 0; background:#fff; border-radius:16px;
+    border:2px solid var(--pink); cursor:pointer; transition:.25s; animation:pop .35s ease backwards; user-select:none; }
+  li:hover { transform:translateX(6px) rotate(-.5deg); border-color:var(--rose); }
+  @keyframes pop { from { opacity:0; transform:scale(.8); } }
+  .box { width:26px; height:26px; flex:none; border-radius:50%; border:2px solid var(--rose); display:grid; place-items:center; font-size:14px; transition:.3s; }
+  li.done { background:#fdf0f3; } li.done .txt { text-decoration:line-through wavy var(--rose); opacity:.6; }
+  li.done .box { background:var(--rose); transform:rotate(360deg); }
+  .txt { flex:1; } .del { opacity:0; border:none; background:none; cursor:pointer; font-size:16px; }
+  li:hover .del { opacity:.6; }
+  .add { display:flex; gap:8px; margin-top:14px; }
+  .add input { flex:1; padding:10px 14px; border-radius:16px; border:2px dashed var(--rose); font:1rem 'Quicksand'; background:#fff; outline:none; }
+  .btn { background:var(--deep); color:#fff; border:none; border-radius:16px; padding:10px 16px; font:600 1rem 'Quicksand'; cursor:pointer; transition:.2s; }
+  .btn:hover { transform:scale(1.06); } .btn.ghost { background:transparent; color:var(--deep); border:2px solid var(--rose); }
+  .foot { display:flex; justify-content:space-between; align-items:center; margin-top:16px; font-size:.85rem; }
+  .heart { position:fixed; pointer-events:none; font-size:20px; z-index:10; animation:float 1.2s ease-out forwards; }
+  @keyframes float { to { transform:translate(var(--dx),-120px) scale(1.5); opacity:0; } }
+  #carrot { position:fixed; font-size:28px; pointer-events:none; z-index:9; display:none; }
+</style>
+</head>
+<body>
+<div id="carrot">🥕</div>
+<div class="wrap"><div class="card">
+  <h1>🐰 Bunny Care Diary</h1>
+  <p class="sub">for my little Netherland Dwarf, <input class="name" id="petName" value="Mochi"></p>
+
+  <div class="stage">
+    <div class="bubble" id="bubble">hi hooman!</div>
+    <svg id="bunny" viewBox="0 0 200 200" aria-label="bunny">
+      <!-- ears (short, Netherland Dwarf style) -->
+      <g class="ear"><ellipse cx="78" cy="58" rx="13" ry="30" fill="#f2a65a" transform="rotate(-12 78 58)"/>
+        <ellipse cx="78" cy="60" rx="6" ry="20" fill="#f8c4cf" transform="rotate(-12 78 60)"/></g>
+      <g class="ear r"><ellipse cx="122" cy="58" rx="13" ry="30" fill="#fff" stroke="#f0e2d8" stroke-width="2" transform="rotate(12 122 58)"/>
+        <ellipse cx="122" cy="60" rx="6" ry="20" fill="#f8c4cf" transform="rotate(12 122 60)"/></g>
+      <!-- body -->
+      <ellipse cx="100" cy="160" rx="62" ry="38" fill="#fff" stroke="#f0e2d8" stroke-width="2"/>
+      <ellipse cx="128" cy="150" rx="26" ry="18" fill="#f2a65a"/>
+      <ellipse cx="72" cy="172" rx="16" ry="10" fill="#f2a65a"/>
+      <circle cx="160" cy="160" r="11" fill="#fff" stroke="#f0e2d8" stroke-width="2"/>
+      <!-- head (big round dwarf head) -->
+      <circle cx="100" cy="112" r="46" fill="#fff" stroke="#f0e2d8" stroke-width="2"/>
+      <!-- broken orange patches + butterfly nose marking -->
+      <path d="M62 100 Q66 76 92 72 Q84 92 78 112 Q66 116 62 100Z" fill="#f2a65a"/>
+      <circle cx="132" cy="96" r="9" fill="#f2a65a"/>
+      <path d="M100 112 Q90 104 86 116 Q92 126 100 122 Q108 126 114 116 Q110 104 100 112Z" fill="#f2a65a" opacity=".85"/>
+      <!-- eyes -->
+      <g id="eyeL"><circle cx="80" cy="108" r="8" fill="#3a2a24"/><circle class="pupil" cx="82" cy="105" r="2.6" fill="#fff"/></g>
+      <g id="eyeR"><circle cx="120" cy="108" r="8" fill="#3a2a24"/><circle class="pupil" cx="122" cy="105" r="2.6" fill="#fff"/></g>
+      <rect class="lid" x="71" y="99" width="18" height="18" rx="9" fill="#f2a65a"/>
+      <rect class="lid" x="111" y="99" width="18" height="18" rx="9" fill="#fff"/>
+      <!-- blush, nose, mouth -->
+      <ellipse cx="70" cy="124" rx="8" ry="5" fill="#f8b4c4" opacity=".8"/>
+      <ellipse cx="130" cy="124" rx="8" ry="5" fill="#f8b4c4" opacity=".8"/>
+      <path class="nose" d="M95 118 L105 118 L100 124Z" fill="#e889a0"/>
+      <path d="M100 124 Q100 130 94 131 M100 124 Q100 130 106 131" stroke="#7a5548" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <!-- bow -->
+      <g transform="translate(100 70)"><path d="M0 0 L-16 -9 L-16 9Z M0 0 L16 -9 L16 9Z" fill="#e8a5b8"/><circle r="4" fill="#c97b92"/></g>
+      <!-- paws -->
+      <ellipse cx="84" cy="190" rx="12" ry="7" fill="#fff" stroke="#f0e2d8" stroke-width="2"/>
+      <ellipse cx="116" cy="190" rx="12" ry="7" fill="#fff" stroke="#f0e2d8" stroke-width="2"/>
+    </svg>
+    <div class="grass"></div>
+  </div>
+
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <div class="ptext" id="ptext"></div>
+
+  <div class="tabs" id="tabs"></div>
+  <ul id="list"></ul>
+  <div class="add"><input id="newTask" placeholder="add a little task... 🌼"><button class="btn" id="addBtn">add</button></div>
+  <div class="foot">
+    <button class="btn ghost" id="feed">🥕 feed a treat</button>
+    <span id="date"></span>
+    <button class="btn ghost" id="reset">↺ new day</button>
+  </div>
+</div></div>
+
+<script>
+const DEFAULTS = {
+  "Daily 🌞": ["Fresh hay refilled 🌾","Fresh water bowl 💧","Leafy greens (romaine, cilantro) 🥬","Measured pellets (~1-2 tbsp)","Spot-clean litter box","Free-roam / playtime 1hr+","Check poops are round & plenty 💩","Cuddles & head pats 💕"],
+  "Weekly 🌙": ["Full cage / pen clean","Brush that orange & white fluff 🪮","Check teeth & eyes","Weigh (~1-2.5 lb for a Netherland Dwarf)","Wash food bowls & bottle","Rotate toys & chews 🧸"],
+  "Monthly 🌷": ["Nail trim ✂️","Check ears & scent glands","Restock hay, pellets, litter","Health check / vet if needed 🩺"]
+};
+const today = new Date().toDateString();
+let state = JSON.parse(localStorage.getItem("bunnyState") || "null") || { tasks: DEFAULTS, done:{}, name:"Mochi", day:today };
+let tab = Object.keys(state.tasks)[0];
+const $ = id => document.getElementById(id);
+const save = () => localStorage.setItem("bunnyState", JSON.stringify(state));
+if (state.day !== today) { state.done[Object.keys(state.tasks)[0]] = []; state.day = today; save(); }
+
+const bunny = $("bunny"), bubble = $("bubble");
+const lines = ["binky time!! ✨","nom nom 🥕","more pets pls","you're the best hooman","*thump thump*","i love you 💗","zoomies!!"];
+function say(t){ bubble.textContent=t; bubble.classList.add("show"); clearTimeout(say.t); say.t=setTimeout(()=>bubble.classList.remove("show"),1800); }
+function anim(cls){ bunny.classList.remove("hop","binky"); void bunny.offsetWidth; bunny.classList.add(cls); }
+function hearts(x,y,n=6,emo=["💗","🌸","✨","💕"]){
+  for(let i=0;i<n;i++){ const h=document.createElement("div"); h.className="heart";
+    h.textContent=emo[Math.random()*emo.length|0]; h.style.left=x+"px"; h.style.top=y+"px";
+    h.style.setProperty("--dx",(Math.random()*120-60)+"px"); h.style.animationDelay=i*60+"ms";
+    document.body.appendChild(h); setTimeout(()=>h.remove(),1500); }
+}
+
+function render(){
+  $("petName").value = state.name;
+  $("tabs").innerHTML = Object.keys(state.tasks).map(k=>`<button class="tab ${k===tab?"active":""}">${k}</button>`).join("");
+  [...$("tabs").children].forEach(b=>b.onclick=()=>{ tab=b.textContent; render(); anim("hop"); });
+  const done = state.done[tab] || [];
+  $("list").innerHTML = state.tasks[tab].map((t,i)=>`<li class="${done.includes(t)?"done":""}" style="animation-delay:${i*40}ms">
+    <span class="box">${done.includes(t)?"✓":""}</span><span class="txt">${t.replace(/</g,"&lt;")}</span><button class="del" title="remove">✕</button></li>`).join("");
+  [...$("list").children].forEach((li,i)=>{
+    const t = state.tasks[tab][i];
+    li.onclick = e => {
+      if (e.target.classList.contains("del")) { state.tasks[tab].splice(i,1); state.done[tab]=done.filter(d=>d!==t); save(); render(); return; }
+      const d = state.done[tab] = state.done[tab] || [];
+      if (d.includes(t)) d.splice(d.indexOf(t),1);
+      else { d.push(t); hearts(e.clientX,e.clientY); anim("hop"); say(lines[Math.random()*lines.length|0]); }
+      save(); render();
+    };
+  });
+  const pct = state.tasks[tab].length ? Math.round(done.length/state.tasks[tab].length*100) : 0;
+  $("bar").style.width = pct+"%";
+  $("ptext").textContent = pct===100 ? `🎉 ${state.name} is one happy bun! 🎉` : `${done.length} / ${state.tasks[tab].length} done · ${pct}%`;
+  if (pct===100 && done.length) { setTimeout(()=>{ anim("binky"); const r=bunny.getBoundingClientRect(); hearts(r.left+85,r.top+40,16); },300); }
+}
+
+$("addBtn").onclick = () => { const v=$("newTask").value.trim(); if(!v) return; state.tasks[tab].push(v); $("newTask").value=""; save(); render(); };
+$("newTask").onkeydown = e => { if(e.key==="Enter") $("addBtn").click(); };
+$("petName").oninput = e => { state.name=e.target.value||"Bun"; save(); };
+$("reset").onclick = () => { state.done[tab]=[]; save(); render(); say("fresh start! 🌼"); };
+bunny.onclick = e => { anim(Math.random()<.5?"binky":"hop"); hearts(e.clientX,e.clientY,8); say(lines[Math.random()*lines.length|0]); };
+
+// carrot feeding: carrot follows cursor, click bunny to feed
+const carrot = $("carrot"); let feeding=false;
+$("feed").onclick = e => { e.stopPropagation(); feeding=!feeding; carrot.style.display=feeding?"block":"none"; say(feeding?"ooh is that for me?? 👀":"aww"); };
+document.addEventListener("click", e => {
+  if (!feeding || e.target.id==="feed") return;
+  if (bunny.contains(e.target)) { feeding=false; carrot.style.display="none"; say("NOM NOM NOM 🥕"); hearts(e.clientX,e.clientY,10,["🥕","💗","✨"]); anim("binky"); }
+});
+
+// eyes follow cursor
+document.addEventListener("mousemove", e => {
+  carrot.style.left=e.clientX+8+"px"; carrot.style.top=e.clientY-10+"px";
+  const r = bunny.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height*.54;
+  const a = Math.atan2(e.clientY-cy, e.clientX-cx), dx=Math.cos(a)*3, dy=Math.sin(a)*3;
+  ["eyeL","eyeR"].forEach(id=>$(id).querySelector(".pupil").setAttribute("transform",`translate(${dx-2} ${dy+3})`));
+});
+
+// falling petals
+setInterval(()=>{ const p=document.createElement("div"); p.className="petal";
+  p.textContent=["🌸","🌷","🍃","🌼","💮"][Math.random()*5|0]; p.style.left=Math.random()*100+"vw";
+  p.style.animationDuration=6+Math.random()*6+"s"; document.body.appendChild(p); setTimeout(()=>p.remove(),12000); }, 900);
+
+// idle bunny hops occasionally
+setInterval(()=>{ if(Math.random()<.4) anim("hop"); }, 7000);
+
+$("date").textContent = new Date().toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"});
+render(); setTimeout(()=>say(`hi! i'm ${state.name} 🐰`),600);
+</script>
+</body>
+</html>
